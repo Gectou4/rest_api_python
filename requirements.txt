@@ -1,0 +1,5 @@
+flask==3.1.*
+pymysql==1.1.*
+cryptography==44.*
+pytest==8.3.*
+gunicorn==23.0.*
