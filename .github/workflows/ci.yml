@@ -51,6 +51,15 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Wait for MySQL
+        run: |
+          for i in $(seq 1 30); do
+            mysql -h 127.0.0.1 -u root -proot -e "SELECT 1" rest_api >/dev/null 2>&1 && exit 0
+            echo "Waiting for MySQL ($i/30)..."
+            sleep 2
+          done
+          echo "MySQL did not become ready"
+          exit 1
       - name: Initialize database
         run: |
           mysql -h 127.0.0.1 -u root -proot rest_api < share/sql/rest_api.sql
