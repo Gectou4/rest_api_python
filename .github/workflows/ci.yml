@@ -53,6 +53,12 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Initialize database
         run: |
+          # The health check can pass while MySQL still runs its temporary
+          # init server (socket only), so wait until TCP connections work.
+          for i in $(seq 1 30); do
+            mysql -h 127.0.0.1 -u root -proot -e 'SELECT 1' >/dev/null 2>&1 && break
+            sleep 2
+          done
           mysql -h 127.0.0.1 -u root -proot rest_api < share/sql/rest_api.sql
       - name: Install dependencies
         run: |
